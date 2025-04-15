@@ -8,9 +8,7 @@ async function bootstrap() {
   const prismaService = app.get(PrismaService);
   await prismaService.onModuleInit(); // Connect to DB
   app.enableCors({
-    origin: ['https://adeluxe.onrender.com', 'http://localhost:9000'],
-    methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
-    credentials: true, 
+    origin: '*',
   });
   app.enableShutdownHooks();
 
