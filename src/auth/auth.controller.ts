@@ -6,8 +6,21 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  register(@Body() body: { email: string; password: string }) {
-    return this.authService.register(body.email, body.password);
+  register(
+    @Body()
+    body: {
+      email: string;
+      password: string;
+      phone: string;
+      name: string;
+    },
+  ) {
+    return this.authService.register(
+      body.email,
+      body.password,
+      body.phone,
+      body.name,
+    );
   }
 
   @Post('login')

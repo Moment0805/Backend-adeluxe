@@ -13,8 +13,8 @@ export class AuthService {
 
   
  
-  async register(email: string, password: string) {
-    const user = await this.usersService.create(email, password);
+  async register(email: string, password: string, phone: string, name: string) {
+    const user = await this.usersService.create(email, password, phone);
     return { message: 'User registered', user };
   }
 

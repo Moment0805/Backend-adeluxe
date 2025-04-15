@@ -22,9 +22,9 @@ export class UsersController {
     return this.usersService.findById(Number(id)); // Ensure id is converted to a number
   }
 
-  @Post() // Create a new user (assuming this is for admin use)
-  create(@Body() user: { email: string; password: string }) {
-    return this.usersService.create(user.email, user.password); // Use the service to create a user
+  @Post() // Create a new user 
+  create(@Body() user: { email: string; password: string, phone: string }) {
+    return this.usersService.create(user.email, user.password, user.phone); // Use the service to create a user
   }
 
   @Patch(':id') // Update user by ID

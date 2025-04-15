@@ -19,12 +19,12 @@ export class OrdersService {
     if (!items || !Array.isArray(items)) {
       throw new Error('Invalid or missing items array.');
     }
-  
+
     const order = await this.prisma.order.create({
       data: {
         userId,
         items: {
-          create: items.map(item => ({
+          create: items.map((item) => ({
             name: item.name,
             image: item.image,
             price: item.price,
@@ -34,25 +34,25 @@ export class OrdersService {
       },
       include: { items: true },
     });
-  
+
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-  
+
     // ✅ Send notification to *user who placed the order*
     if (user?.email) {
       await this.notificationsService.sendEmail(
         user.email,
         'Order Placed Successfully ✅',
-        `<p>Hi ${user.email},</p><p>Your order #${order.items} has been received. Thank you!</p>`
+        `<p>Hi ${user.email},</p><p>Your order #${order.items} has been received. Thank you!</p>`,
       );
     }
-  
+
     if (user?.phone) {
       await this.notificationsService.sendSms(
         user.phone,
-        `Hello! Your order #${order.items} has been placed successfully.`
+        `Hello! Your order #${order.items} has been placed successfully.`,
       );
     }
-  
+
     return order;
   }
 
