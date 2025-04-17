@@ -1,45 +1,58 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, UseGuards, Delete, Get, Param, Patch, Post, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  UseGuards,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Request,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RequestWithUser } from 'src/types/express'; // Importing Request from express
+import { RequestWithUser } from 'src/types/express';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('me') 
+  @Get('me')
   getProfile(@Request() req: RequestWithUser) {
-    console.log('User in request:', req.user);
-    return this.usersService.findById(req.user.id); 
+    return this.usersService.findById(req.user.id);
   }
-  
 
-
-  @Get(':id') // Retrieve user by ID
+  @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findById(Number(id)); // Ensure id is converted to a number
+    return this.usersService.findById(Number(id));
   }
 
-  @Post() // Create a new user 
-  create(@Body() user: { email: string; password: string, phone: string }) {
-    return this.usersService.create(user.email, user.password, user.phone); // Use the service to create a user
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    const { email, password, phone } = createUserDto;
+    return this.usersService.create(email, password, phone);
   }
 
-  @Patch(':id') // Update user by ID
-  update(@Param('id') id: string, @Body() userUpdate: { email?: string; password?: string }) {
-    return this.usersService.update(Number(id), userUpdate); // Convert id to number
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateDto: UpdateUserDto) {
+    return this.usersService.update(Number(id), updateDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('me') // Update the logged-in user's profile
-  updateProfile(@Request() req: RequestWithUser, @Body() body: { email?: string; password?: string }) {
-    return this.usersService.update(req.user.id, body); // Pass userId from the token
+  @Patch('me')
+  updateProfile(
+    @Request() req: RequestWithUser,
+    @Body() updateDto: UpdateUserDto,
+  ) {
+    return this.usersService.update(req.user.id, updateDto);
   }
 
-  @Delete(':id') // Delete user by ID
+  @Delete(':id')
   delete(@Param('id') id: string) {
-    return this.usersService.delete(Number(id)); // Ensure id is converted to a number
+    return this.usersService.delete(Number(id));
   }
 }

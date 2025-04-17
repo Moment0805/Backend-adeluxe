@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateOrderDto } from '../dto/create-order.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -22,17 +23,17 @@ export class OrdersController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   createOrder(
-    @Body() body: { items: { name: string; image: string; price: number; quantity: number; }[] },
+    @Body() createOrderDto: CreateOrderDto,
     @Request() req
-  ) { const userId = req.user?.id;
+  ) {
+    const userId = req.user?.id;
 
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
-  
-    return this.ordersService.create(userId, body.items);
+
+    return this.ordersService.create(userId, createOrderDto.items);
   }
-  
 
   @UseGuards(AuthGuard('jwt'))
   @Get('me')

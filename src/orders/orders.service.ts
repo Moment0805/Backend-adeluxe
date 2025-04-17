@@ -8,6 +8,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from 'src/notifications/notification.service';
+import { OrderItemDto } from '../dto/create-order.dto';
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -15,11 +17,7 @@ export class OrdersService {
     private notificationsService: NotificationsService,
   ) {}
 
-  async create(userId: number, items: any[]) {
-    if (!items || !Array.isArray(items)) {
-      throw new Error('Invalid or missing items array.');
-    }
-
+  async create(userId: number, items: OrderItemDto[]) {
     const order = await this.prisma.order.create({
       data: {
         userId,
@@ -37,19 +35,19 @@ export class OrdersService {
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
 
-    // ✅ Send notification to *user who placed the order*
+    // ✅ Send notification to the user
     if (user?.email) {
       await this.notificationsService.sendEmail(
         user.email,
         'Order Placed Successfully ✅',
-        `<p>Hi ${user.email},</p><p>Your order #${order.items} has been received. Thank you!</p>`,
+        `<p>Hi ${user.email},</p><p>Your order has been received. Thank you!</p>`,
       );
     }
 
     if (user?.phone) {
       await this.notificationsService.sendSms(
         user.phone,
-        `Hello! Your order #${order.items} has been placed successfully.`,
+        `Hello! Your order has been placed successfully.`,
       );
     }
 
